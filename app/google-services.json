@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "345066764166",
+    "project_id": "fridgey-edfba",
+    "storage_bucket": "fridgey-edfba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:345066764166:android:be4f4772e82f67ad79de07",
+        "android_client_info": {
+          "package_name": "com.alp.fridgeyapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "345066764166-k4lnsobgi12qr0cmptok58f8s4hfoaj9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alp.fridgeyapp",
+            "certificate_hash": "252a52d1cdf80562d5e360f0c4072883d54d304e"
+          }
+        },
+        {
+          "client_id": "345066764166-q0sggljk1hmhl6nhc568mk6ec7uncros.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFVa4sKs6BBVphrYQ9yH7pcRqlsU-wNco"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "345066764166-q0sggljk1hmhl6nhc568mk6ec7uncros.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
