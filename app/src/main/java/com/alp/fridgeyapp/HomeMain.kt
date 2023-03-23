@@ -16,16 +16,44 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.alp.fridgeyapp.ui.theme.FridgeyTheme
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.alp.fridgeyapp.ui.theme.FridgeyText
 import com.alp.fridgeyapp.ui.theme.HomeCommunityBg
+import com.alp.fridgeyapp.ui.theme.HomeText
 import com.alp.fridgeyapp.ui.theme.caviarFamily
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class HomeViewModel @Inject constructor(val auth: AuthService) : ViewModel()
 
 @Composable
-fun HomeText(t : String, isBold : Boolean = false, fSize : Int = 19, align: TextAlign = TextAlign.Center) {
-    if (isBold)
-        Text(text = t, fontSize = fSize.sp, fontFamily = caviarFamily, fontWeight = FontWeight.Bold, color = Color.Black, textAlign = align)
-    else
-        Text(text = t, fontSize = fSize.sp, fontFamily = caviarFamily, color = Color.Black, textAlign = align)
+fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
+        Card(elevation = 10.dp, modifier = Modifier.fillMaxWidth()) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(20.dp)) {
+                Image(painter = painterResource(R.drawable.app_logo), contentDescription = "Main Logo")
+                HomeText(t = "welcome back \uD83D\uDC4B, ${viewModel.auth.userDisplayName}", isBold = true, fSize = 20)
+                Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(25.dp)) {
+                    HomeTextInCircle(t = "hello\nrana", progress = 347f)
+                    Spacer(modifier = Modifier.size(70.dp))
+                    HomeTextInCircle(t = "hello\nceyda", progress = 240f)
+                    Spacer(modifier = Modifier.size(75.dp))
+                    HomeTextInCircle(t = "hello\nalp", progress = 347f)
+                }
+                Button(onClick = { viewModel.auth.signOut() }) {
+                    FridgeyText("Temp. Sign Out")
+                }
+            }
+        }
+        Card(elevation = 1.dp, modifier = Modifier.fillMaxWidth(), backgroundColor = HomeCommunityBg) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
+                CommunityColumn(title = true, arrayOf("alp is using fridgey!", "ceyda the aimaster", "rana is creating great ui!"))
+                CommunityColumn(title = false, arrayOf("hi there, rana the coolest is here", "ensar is learning kotlin"))
+            }
+        }
+    }
 }
 
 @Composable
@@ -40,50 +68,19 @@ fun HomeTextInCircle(t : String = "hello Fridgey", progress : Float = 250f) {
                 size = Size(220f, 220f),
                 topLeft = Offset(-145f, -110f)
             )
-        })
-}
-
-
-@Composable
-fun HomeTopCard() {
-    Card(elevation = 10.dp, modifier = Modifier.fillMaxWidth()) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(30.dp)) {
-            // Spacer(modifier = Modifier.size(30.dp))
-            Image(painter = painterResource(R.drawable.app_logo), contentDescription = "Main Logo")
-            // row içinde el sembolü eklenecek
-            HomeText(t = "welcome back, user12445", isBold = true, fSize = 17)
-            Spacer(modifier = Modifier.size(30.dp))
-            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(30.dp)) {
-                HomeTextInCircle(t = "hello\nrana", progress = 347f)
-                Spacer(modifier = Modifier.size(70.dp))
-                HomeTextInCircle(t = "hello\nceyda", progress = 240f)
-                Spacer(modifier = Modifier.size(75.dp))
-                HomeTextInCircle(t = "hello\nalp", progress = 347f)
-            }
-            Spacer(modifier = Modifier.size(0.dp))
         }
-    }
+    )
 }
 
 @Composable
-fun HomeBottomCard() {
-    Card(elevation = 1.dp, modifier = Modifier.fillMaxWidth(), backgroundColor = HomeCommunityBg) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
-            CommunityColumn(tittle = true, arrayOf("alp is using fridgey!", "ceyda the aimaster", "rana is creating great ui!"))
-            CommunityColumn(tittle = false, arrayOf("hi there, rana the coolest is here", "ensar is learning kotlin"))
-        }
-    }
-}
-
-@Composable
-fun CommunityColumn(tittle: Boolean = false, content: Array<String>) {
+fun CommunityColumn(title: Boolean = false, content: Array<String>) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly, modifier = Modifier
         .padding(5.dp)
         .height(2000.dp)
         .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(15.dp))
-        if (tittle) {
+        if (title) {
             HomeText(t = "from\nyour community", isBold = true, align = TextAlign.Start)
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -109,10 +106,3 @@ fun CommunityButton(text: String) {
     Spacer(modifier = Modifier.height(20.dp))
 }
 
-@Composable
-fun HomeScreen() {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
-        HomeTopCard()
-        HomeBottomCard()
-    }
-}

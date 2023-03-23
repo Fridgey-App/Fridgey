@@ -10,10 +10,12 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.alp.fridgeyapp.ui.theme.FridgeyTheme
+import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -25,45 +27,49 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.sign
 
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject lateinit var firebaseAuth: FirebaseAuthManager
-    lateinit var googleAuth : GoogleSignInClient
+
+    @Inject lateinit var auth : AuthService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        googleAuth = GoogleSignIn.getClient(this,
-            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestId()
-                .requestProfile()
-                .build())
-        setContent { FridgeyNavHost(googleAuth) }
-    }
 
-    private fun signOut() {
-        firebaseAuth.signOut()
-        googleAuth.signOut().addOnSuccessListener {
-            Toast.makeText(this, "Sign Out Successful", Toast.LENGTH_SHORT).show()
-        }
-            .addOnFailureListener {
-            Toast.makeText(this, "Sign Out Failed", Toast.LENGTH_SHORT).show()
-        }
+        setContent { FridgeyNavHost() }
     }
 
     @Composable
-    fun FridgeyNavHost(googleSignInClient: GoogleSignInClient) {
-        var navController = rememberNavController()
+    fun FridgeyNavHost() {
+        val navController = rememberNavController()
+
+        val startDestination = if (auth.hasUser)
+            MAIN_SCREEN
+        else
+            SPLASH_SCREEN
+
+        auth.addStateChangeListener {
+            run {
+                if (auth.hasUser)
+                    navController.navigate(MAIN_SCREEN)
+                else
+                    navController.navigate(SPLASH_SCREEN)
+            }
+        }
 
         FridgeyTheme(darkTheme = false) {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                NavHost(navController = navController, startDestination = "splashscreen") {
-                    composable("splashscreen") { SplashScreen(googleSignInClient, firebaseAuth = firebaseAuth.getFirebaseAuth(), navController = navController) }
-                    composable("main") { AppBottomNavigation { signOut() } }
+                NavHost(navController = navController, startDestination = startDestination) {
+                    composable(SPLASH_SCREEN) {
+                        val viewModel = hiltViewModel<SplashScreenViewModel>()
+                        SplashScreen(viewModel)
+                    }
+                    composable(MAIN_SCREEN) { AppBottomNavigation() }
                 }
             }
         }
     }
+
 }
 
 

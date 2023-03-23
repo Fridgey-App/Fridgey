@@ -11,10 +11,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun AppBottomNavigation(signOutClicked: () -> Unit) {
+fun AppBottomNavigation() {
     val navController = rememberNavController()
     Scaffold(bottomBar = { BottomBar(navController = navController)}) {
-        BottomNavGraph(navController = navController, onSignOut = signOutClicked)
+        BottomNavGraph(navController = navController)
     }
 }
 

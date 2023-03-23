@@ -6,10 +6,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.alp.fridgeyapp.R
 
@@ -62,4 +64,12 @@ fun FridgeyText(t : String, isBold : Boolean = false) {
         Text(text = t, fontSize = 22.sp, fontFamily = caviarFamily, fontWeight = FontWeight.Bold)
     else
         Text(text = t, fontSize = 22.sp, fontFamily = caviarFamily)
+}
+
+@Composable
+fun HomeText(t : String, isBold : Boolean = false, fSize : Int = 19, align: TextAlign = TextAlign.Center) {
+    if (isBold)
+        Text(text = t, fontSize = fSize.sp, fontFamily = caviarFamily, fontWeight = FontWeight.Bold, color = Color.Black, textAlign = align)
+    else
+        Text(text = t, fontSize = fSize.sp, fontFamily = caviarFamily, color = Color.Black, textAlign = align)
 }

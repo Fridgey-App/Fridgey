@@ -1,8 +1,6 @@
 package com.alp.fridgeyapp
 
 import android.app.Activity
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,73 +23,54 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.alp.fridgeyapp.ui.theme.FridgeyText
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
-@Composable
-fun SplashScreen(signInClient: GoogleSignInClient, firebaseAuth: FirebaseAuth, navController: NavController) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top, modifier = Modifier.fillMaxSize()) {
-        LoginTopCard()
-        Spacer(modifier = Modifier.height(20.dp))
-        LoginBottomCard(signInClient, firebaseAuth, navController)
-    }
-}
-
-
-@Composable
-fun LoginTopCard() {
-    Card(elevation = 1.dp, modifier = Modifier.fillMaxWidth()) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(30.dp)) {
-            Image(painter = painterResource(R.drawable.app_logo), contentDescription = "Main Logo")
-            FridgeyText(t = "your pocket's best friend", isBold = true)
-        }
-    }
-}
+@HiltViewModel
+class SplashScreenViewModel @Inject constructor(val auth: AuthService) : ViewModel()
 
 enum class SignInScreenState {
     MAIN, SIGN_UP, SIGN_IN
 }
 
 @Composable
-fun LoginBottomCard(signInClient: GoogleSignInClient, firebaseAuth: FirebaseAuth, navController: NavController) {
-    val context = LocalContext.current
+fun SplashScreen(viewModel: SplashScreenViewModel = viewModel()) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top, modifier = Modifier.fillMaxSize()) {
+        Card(elevation = 1.dp, modifier = Modifier.fillMaxWidth()) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(30.dp)) {
+                Image(painter = painterResource(R.drawable.app_logo), contentDescription = "Main Logo")
+                FridgeyText(t = "your pocket's best friend", isBold = true)
+            }
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        LoginBottomCard(viewModel)
+    }
+}
+
+@Composable
+fun LoginBottomCard(viewModel: SplashScreenViewModel) {
     val startForResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if (result.resultCode != Activity.RESULT_OK) return@rememberLauncherForActivityResult
         val intent = result.data ?: return@rememberLauncherForActivityResult
 
         val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(intent)
         val credential = GoogleAuthProvider.getCredential(task.result.idToken, null)
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(context as Activity) { task ->
-            if (task.isSuccessful) {
-                navController.navigate("main")
-            }
-        }
-    }
-
-    fun signUpEmailPassword(email: String, password: String) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(context as Activity) { task ->
-                if (task.isSuccessful) {
-                    navController.navigate("main")
-                }
-            }
-    }
-
-    fun signInEmailPassword(email: String, password: String) {
-        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(context as Activity) { task ->
-                if (task.isSuccessful) {
-                    navController.navigate("main")
-                }
-            }
+        runBlocking { viewModel.auth.authenticateWithGoogle(credential) }
     }
 
     var screenState by remember { mutableStateOf(SignInScreenState.MAIN) }
+    val coroutineScope = rememberCoroutineScope()
 
     Card(elevation = 1.dp, modifier = Modifier
         .fillMaxWidth()
@@ -100,16 +79,16 @@ fun LoginBottomCard(signInClient: GoogleSignInClient, firebaseAuth: FirebaseAuth
             when (a) {
                 SignInScreenState.MAIN -> SignInMain(
                     onSignUpPressed = { screenState = SignInScreenState.SIGN_UP },
-                    onGoogleSignInPressed = { startForResult.launch(signInClient.signInIntent) },
+                    onGoogleSignInPressed = { startForResult.launch(viewModel.auth.googleAuth.signInIntent) },
                     onSignInPressed = { screenState = SignInScreenState.SIGN_IN }
                 )
                 SignInScreenState.SIGN_UP -> SignUp(
                     onBackPressed = { screenState = SignInScreenState.MAIN},
-                    onSignUpPressed = { e, p -> signUpEmailPassword(e, p) },
+                    onSignUpPressed = { u, e, p -> coroutineScope.launch { viewModel.auth.signUp(u, e, p)} },
                 )
                 SignInScreenState.SIGN_IN -> SignInEmailPassword(
                     onBackPressed = { screenState = SignInScreenState.MAIN },
-                    onSignInPressed = { e, p -> signInEmailPassword(e, p) },
+                    onSignInPressed = { e, p -> coroutineScope.launch { viewModel.auth.authenticateWithEmail(e, p) } },
                 )
             }
         }
@@ -144,10 +123,11 @@ fun SignInMain(onSignUpPressed: () -> Unit, onGoogleSignInPressed: () -> Unit, o
 }
 
 @Composable
-fun SignUp(onBackPressed : () -> Unit, onSignUpPressed: (String, String) -> Unit) {
+fun SignUp(onBackPressed : () -> Unit, onSignUpPressed: (String, String, String) -> Unit) {
+    var username by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
-    var passwordConfirmation by remember { mutableStateOf(TextFieldValue("")) }
+//    var passwordConfirmation by remember { mutableStateOf(TextFieldValue("")) }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -159,6 +139,12 @@ fun SignUp(onBackPressed : () -> Unit, onSignUpPressed: (String, String) -> Unit
             }
             FridgeyText("sign up", isBold = true)
         }
+        OutlinedTextField(
+            value = username,
+            onValueChange = { text : TextFieldValue -> username = text },
+            label = {Text("Username")},
+            singleLine = true,
+        )
         OutlinedTextField(
             value = email,
             onValueChange = { text : TextFieldValue -> email = text },
@@ -172,16 +158,16 @@ fun SignUp(onBackPressed : () -> Unit, onSignUpPressed: (String, String) -> Unit
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
         )
-        OutlinedTextField(
-            value = passwordConfirmation,
-            onValueChange = { text : TextFieldValue -> passwordConfirmation = text },
-            label = {Text("Confirm password")},
-            isError = (password != passwordConfirmation),
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation()
-        )
+//        OutlinedTextField(
+//            value = passwordConfirmation,
+//            onValueChange = { text : TextFieldValue -> passwordConfirmation = text },
+//            label = {Text("Confirm password")},
+//            isError = (password != passwordConfirmation),
+//            singleLine = true,
+//            visualTransformation = PasswordVisualTransformation()
+//        )
         Spacer(modifier = Modifier.height(10.dp))
-        Button(onClick = { onSignUpPressed(email.text, password.text) }) {
+        Button(onClick = { onSignUpPressed(username.text, email.text, password.text) }) {
             FridgeyText(t = "start your journey", isBold = true)
         }
     }
