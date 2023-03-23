@@ -14,14 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "345066764166-k4lnsobgi12qr0cmptok58f8s4hfoaj9.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.alp.fridgeyapp",
-            "certificate_hash": "252a52d1cdf80562d5e360f0c4072883d54d304e"
-          }
-        },
-        {
           "client_id": "345066764166-q0sggljk1hmhl6nhc568mk6ec7uncros.apps.googleusercontent.com",
           "client_type": 3
         }

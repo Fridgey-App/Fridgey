@@ -14,15 +14,11 @@ import androidx.navigation.NavController
 import com.alp.fridgeyapp.ui.theme.FridgeyTheme
 
 @Composable
-fun MyFridge(onSignOut: () -> Unit) {
+fun MyFridge() {
     FridgeyTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
                 Text(text = "MyFridge")
-                Text(text = "LOG OUT BY CLICKING BUTTON BELOW")
-                Button(onClick = onSignOut) {
-                    
-                }
             }
         }
     }

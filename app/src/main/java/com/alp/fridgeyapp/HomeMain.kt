@@ -1,11 +1,6 @@
 package com.alp.fridgeyapp
-import android.icu.text.CaseMap.Title
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,30 +12,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.alp.fridgeyapp.R
 import com.alp.fridgeyapp.ui.theme.FridgeyTheme
 import com.alp.fridgeyapp.ui.theme.HomeCommunityBg
-
-//class HomeMain : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-//            HomeScreen()
-//        }
-//    }
-//}
+import com.alp.fridgeyapp.ui.theme.caviarFamily
 
 @Composable
 fun HomeText(t : String, isBold : Boolean = false, fSize : Int = 19, align: TextAlign = TextAlign.Center) {
@@ -70,7 +48,7 @@ fun HomeTextInCircle(t : String = "hello Fridgey", progress : Float = 250f) {
 fun HomeTopCard() {
     Card(elevation = 10.dp, modifier = Modifier.fillMaxWidth()) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(30.dp)) {
-            Spacer(modifier = Modifier.size(30.dp))
+            // Spacer(modifier = Modifier.size(30.dp))
             Image(painter = painterResource(R.drawable.app_logo), contentDescription = "Main Logo")
             // row içinde el sembolü eklenecek
             HomeText(t = "welcome back, user12445", isBold = true, fSize = 17)
@@ -133,18 +111,8 @@ fun CommunityButton(text: String) {
 
 @Composable
 fun HomeScreen() {
-    FridgeyTheme {
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
-                HomeTopCard()
-                HomeBottomCard()
-            }
-        }
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
+        HomeTopCard()
+        HomeBottomCard()
     }
 }
-
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun DefaultPreview() {
-//    Main()
-//}

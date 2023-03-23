@@ -16,7 +16,7 @@ fun BottomNavGraph(navController: NavHostController, onSignOut: () -> Unit) {
             Scan()
         }
         composable(route = BottomBarScreen.MyFridge.route) {
-            MyFridge(onSignOut)
+            MyFridge()
         }
     }
 }
