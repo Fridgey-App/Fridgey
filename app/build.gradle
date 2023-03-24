@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.alp.fridgeyapp'
+    namespace 'com.fridgey.app'
     compileSdk 33
 
     defaultConfig {
-        applicationId 'com.alp.fridgeyapp'
+        applicationId 'com.fridgey.app'
         minSdk 21
         targetSdk 33
         versionCode 1

@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp.screen
+package com.fridgey.app.screen
 
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.alp.fridgeyapp.R
-import com.alp.fridgeyapp.service.AuthService
-import com.alp.fridgeyapp.ui.theme.FridgeyText
+import com.fridgey.app.R
+import com.fridgey.app.service.AuthService
+import com.fridgey.app.ui.theme.FridgeyText
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task

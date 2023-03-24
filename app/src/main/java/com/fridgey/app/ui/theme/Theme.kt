@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp.ui.theme
+package com.fridgey.app.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.alp.fridgeyapp.R
+import com.fridgey.app.R
 
 private val DarkColorPalette = darkColors(
         primary = FridgeyBlue,

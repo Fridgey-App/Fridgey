@@ -1,7 +1,7 @@
-package com.alp.fridgeyapp.service
+package com.fridgey.app.service
 
 import android.content.Context
-import com.alp.fridgeyapp.R
+import com.fridgey.app.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.AuthCredential

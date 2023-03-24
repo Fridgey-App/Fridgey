@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp.screen
+package com.fridgey.app.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

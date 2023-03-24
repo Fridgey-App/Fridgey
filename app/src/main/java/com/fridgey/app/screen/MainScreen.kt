@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp.screen
+package com.fridgey.app.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
@@ -21,10 +21,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.alp.fridgeyapp.MAIN_HOME
-import com.alp.fridgeyapp.MAIN_MY_FRIDGE
-import com.alp.fridgeyapp.MAIN_SCAN
-import com.alp.fridgeyapp.ui.theme.DividerColor
+import com.fridgey.app.MAIN_HOME
+import com.fridgey.app.MAIN_MY_FRIDGE
+import com.fridgey.app.MAIN_SCAN
+import com.fridgey.app.ui.theme.DividerColor
 import androidx.compose.material.Divider
 import androidx.compose.ui.graphics.Color
 

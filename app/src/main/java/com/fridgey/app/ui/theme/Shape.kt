@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp.ui.theme
+package com.fridgey.app.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp
+package com.fridgey.app
 
 const val MAIN = "main"
 const val SPLASH = "splash"

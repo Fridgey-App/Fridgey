@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp
+package com.fridgey.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,11 +11,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.alp.fridgeyapp.screen.MainScreen
-import com.alp.fridgeyapp.screen.SplashScreen
-import com.alp.fridgeyapp.screen.SplashScreenViewModel
-import com.alp.fridgeyapp.service.AuthService
-import com.alp.fridgeyapp.ui.theme.FridgeyTheme
+import com.fridgey.app.screen.MainScreen
+import com.fridgey.app.screen.SplashScreen
+import com.fridgey.app.screen.SplashScreenViewModel
+import com.fridgey.app.service.AuthService
+import com.fridgey.app.ui.theme.FridgeyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

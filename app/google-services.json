@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:345066764166:android:be4f4772e82f67ad79de07",
+        "mobilesdk_app_id": "1:345066764166:android:d36d7eded5d31b8479de07",
         "android_client_info": {
-          "package_name": "com.alp.fridgeyapp"
+          "package_name": "com.fridgey.app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "345066764166-rmebv6i080pdoi88i6aqnklvb6est6fl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fridgey.app",
+            "certificate_hash": "d19f2c3fc76600213f99e751f714855d8a412ee3"
+          }
+        },
         {
           "client_id": "345066764166-q0sggljk1hmhl6nhc568mk6ec7uncros.apps.googleusercontent.com",
           "client_type": 3

@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp.screen
+package com.fridgey.app.screen
 
 import android.content.Context
 import android.util.Log
@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.alp.fridgeyapp.ui.theme.FridgeyText
+import com.fridgey.app.ui.theme.FridgeyText
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted

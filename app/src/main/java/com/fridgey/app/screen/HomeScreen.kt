@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp.screen
+package com.fridgey.app.screen
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -18,12 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.alp.fridgeyapp.R
-import com.alp.fridgeyapp.service.AuthService
-import com.alp.fridgeyapp.ui.theme.FridgeyText
-import com.alp.fridgeyapp.ui.theme.HomeCommunityBg
-import com.alp.fridgeyapp.ui.theme.HomeText
-import com.alp.fridgeyapp.ui.theme.caviarFamily
+import com.fridgey.app.R
+import com.fridgey.app.service.AuthService
+import com.fridgey.app.ui.theme.FridgeyText
+import com.fridgey.app.ui.theme.HomeCommunityBg
+import com.fridgey.app.ui.theme.HomeText
+import com.fridgey.app.ui.theme.caviarFamily
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
