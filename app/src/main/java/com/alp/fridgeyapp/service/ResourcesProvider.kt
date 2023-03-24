@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp
+package com.alp.fridgeyapp.service
 
 import android.content.Context
 import androidx.annotation.StringRes

@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp
+package com.alp.fridgeyapp.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,11 +15,7 @@ import com.alp.fridgeyapp.ui.theme.FridgeyTheme
 
 @Composable
 fun MyFridge() {
-    FridgeyTheme {
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
-                Text(text = "MyFridge")
-            }
-        }
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
+        Text(text = "MyFridge")
     }
 }

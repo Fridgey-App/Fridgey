@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp
+package com.alp.fridgeyapp.screen
 
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -15,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -23,10 +22,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import com.alp.fridgeyapp.service.AuthService
 import com.alp.fridgeyapp.ui.theme.FridgeyText
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -127,7 +125,6 @@ fun SignUp(onBackPressed : () -> Unit, onSignUpPressed: (String, String, String)
     var username by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
-//    var passwordConfirmation by remember { mutableStateOf(TextFieldValue("")) }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -158,14 +155,6 @@ fun SignUp(onBackPressed : () -> Unit, onSignUpPressed: (String, String, String)
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
         )
-//        OutlinedTextField(
-//            value = passwordConfirmation,
-//            onValueChange = { text : TextFieldValue -> passwordConfirmation = text },
-//            label = {Text("Confirm password")},
-//            isError = (password != passwordConfirmation),
-//            singleLine = true,
-//            visualTransformation = PasswordVisualTransformation()
-//        )
         Spacer(modifier = Modifier.height(10.dp))
         Button(onClick = { onSignUpPressed(username.text, email.text, password.text) }) {
             FridgeyText(t = "start your journey", isBold = true)

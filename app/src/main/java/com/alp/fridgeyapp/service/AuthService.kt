@@ -1,29 +1,15 @@
-package com.alp.fridgeyapp
+package com.alp.fridgeyapp.service
 
 import android.content.Context
-import android.util.Log
-import android.view.View
+import com.alp.fridgeyapp.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.common.io.Resources
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import javax.inject.Singleton
-
-class FirebaseAuthStateListener : FirebaseAuth.AuthStateListener {
-    override fun onAuthStateChanged(auth: FirebaseAuth) {
-        Log.d("[AUTH]", "Auth state has changed, current user: ${auth.currentUser?.email}")
-    }
-}
 
 class AuthService @Inject constructor(private val auth: FirebaseAuth, resources: ResourcesProvider, @ApplicationContext appContext: Context) {
     val googleAuth = GoogleSignIn.getClient(appContext,

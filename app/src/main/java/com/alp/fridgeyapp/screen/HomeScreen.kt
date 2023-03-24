@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp
+package com.alp.fridgeyapp.screen
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.alp.fridgeyapp.R
+import com.alp.fridgeyapp.service.AuthService
 import com.alp.fridgeyapp.ui.theme.FridgeyText
 import com.alp.fridgeyapp.ui.theme.HomeCommunityBg
 import com.alp.fridgeyapp.ui.theme.HomeText
@@ -49,7 +51,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         }
         Card(elevation = 1.dp, modifier = Modifier.fillMaxWidth(), backgroundColor = HomeCommunityBg) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
-                CommunityColumn(title = true, arrayOf("alp is using fridgey!", "ceyda the aimaster", "rana is creating great ui!"))
+                CommunityColumn(title = true, arrayOf("alp is using fridgey!", "ceyda the ai-master", "rana is creating great ui!"))
                 CommunityColumn(title = false, arrayOf("hi there, rana the coolest is here", "ensar is learning kotlin"))
             }
         }

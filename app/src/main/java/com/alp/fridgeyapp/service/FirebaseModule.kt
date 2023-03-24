@@ -1,4 +1,4 @@
-package com.alp.fridgeyapp
+package com.alp.fridgeyapp.service
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
