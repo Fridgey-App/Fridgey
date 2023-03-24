@@ -11,6 +11,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.alp.fridgeyapp.screen.MainScreen
+import com.alp.fridgeyapp.screen.SplashScreen
+import com.alp.fridgeyapp.screen.SplashScreenViewModel
 import com.alp.fridgeyapp.service.AuthService
 import com.alp.fridgeyapp.ui.theme.FridgeyTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,27 +35,27 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
 
         val startDestination = if (auth.hasUser)
-            MAIN_SCREEN
+            MAIN
         else
-            SPLASH_SCREEN
+            SPLASH
 
         auth.addStateChangeListener {
             run {
                 if (auth.hasUser)
-                    navController.navigate(MAIN_SCREEN)
+                    navController.navigate(MAIN)
                 else
-                    navController.navigate(SPLASH_SCREEN)
+                    navController.navigate(SPLASH)
             }
         }
 
         FridgeyTheme(darkTheme = false) {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
                 NavHost(navController = navController, startDestination = startDestination) {
-                    composable(SPLASH_SCREEN) {
+                    composable(SPLASH) {
                         val viewModel = hiltViewModel<SplashScreenViewModel>()
                         SplashScreen(viewModel)
                     }
-                    composable(MAIN_SCREEN) { MainScreen() }
+                    composable(MAIN) { MainScreen() }
                 }
             }
         }

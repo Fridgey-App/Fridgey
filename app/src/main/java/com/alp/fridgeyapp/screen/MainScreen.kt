@@ -19,22 +19,25 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.alp.fridgeyapp.MAIN_HOME
+import com.alp.fridgeyapp.MAIN_MY_FRIDGE
+import com.alp.fridgeyapp.MAIN_SCAN
 
 sealed class BottomBarItem(val route: String, val title: String, val icon: ImageVector) {
     object Home : BottomBarItem(
-        route = "home",
+        route = MAIN_HOME,
         title = "Home",
         icon = Icons.Default.Home
     )
 
     object Scan : BottomBarItem(
-        route = "scan",
+        route = MAIN_SCAN,
         title = "Scan",
         icon = Icons.Default.CameraEnhance
     )
 
     object MyFridge : BottomBarItem(
-        route = "my_fridge",
+        route = MAIN_MY_FRIDGE,
         title = "My Fridge",
         icon = Icons.Default.Face
     )
@@ -52,7 +55,7 @@ fun MainScreen() {
                 ScanScreen()
             }
             composable(route = BottomBarItem.MyFridge.route) {
-                MyFridge()
+                MyFridgeScreen()
             }
         }
     }
@@ -87,7 +90,7 @@ fun RowScope.AddItem(
 ) {
     BottomNavigationItem(
         label = { Text(text = screen.title)},
-        icon = {Icon(imageVector = screen.icon, contentDescription = "Navigation Icon")},
+        icon = {Icon(imageVector = screen.icon, contentDescription = screen.route)},
         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
         onClick = {
             navController.navigate(screen.route)
