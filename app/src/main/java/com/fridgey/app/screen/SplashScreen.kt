@@ -45,7 +45,7 @@ enum class SignInScreenState {
 
 @Composable
 fun SplashScreen(viewModel: SplashScreenViewModel = viewModel()) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top, modifier = Modifier.fillMaxSize()) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top, modifier = Modifier.systemBarsPadding()) {
         Card(elevation = 1.dp, modifier = Modifier.fillMaxWidth()) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(30.dp)) {
                 Image(painter = painterResource(R.drawable.app_logo), contentDescription = "Main Logo")

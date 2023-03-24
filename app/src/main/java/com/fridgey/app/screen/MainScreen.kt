@@ -3,11 +3,9 @@ package com.fridgey.app.screen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraEnhance
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,10 +21,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.fridgey.app.MAIN_HOME
 import com.fridgey.app.MAIN_MY_FRIDGE
-import com.fridgey.app.MAIN_SCAN
 import com.fridgey.app.ui.theme.DividerColor
 import androidx.compose.material.Divider
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
+import com.fridgey.app.SCAN
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 sealed class BottomBarItem(val route: String, val title: String, val icon: ImageVector) {
     object Home : BottomBarItem(
@@ -36,9 +38,9 @@ sealed class BottomBarItem(val route: String, val title: String, val icon: Image
     )
 
     object Scan : BottomBarItem(
-        route = MAIN_SCAN,
+        route = SCAN,
         title = "Scan",
-        icon = Icons.Default.CameraEnhance
+        icon = Icons.Outlined.QrCode2
     )
 
     object MyFridge : BottomBarItem(
@@ -49,15 +51,14 @@ sealed class BottomBarItem(val route: String, val title: String, val icon: Image
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(globalNavController: NavController) {
     val navController = rememberNavController()
-    Scaffold(bottomBar = { BottomBar(navController = navController)}) { padding ->
+    val uiController = rememberSystemUiController()
+    uiController.setSystemBarsColor(Color.White)
+    Scaffold(bottomBar = { BottomBar(mainNavController = navController, globalNavController = globalNavController)}, modifier = Modifier.systemBarsPadding()) { padding ->
         NavHost(navController = navController, BottomBarItem.Home.route, modifier = Modifier.padding(padding)) {
             composable(route = BottomBarItem.Home.route) {
                 HomeScreen(hiltViewModel())
-            }
-            composable(route = BottomBarItem.Scan.route) {
-                ScanScreen()
             }
             composable(route = BottomBarItem.MyFridge.route) {
                 MyFridgeScreen()
@@ -67,14 +68,23 @@ fun MainScreen() {
 }
 
 @Composable
-fun BottomBar(navController: NavHostController) {
+fun BottomBar(globalNavController: NavController, mainNavController: NavHostController) {
     val screens = listOf(
         BottomBarItem.Home,
         BottomBarItem.Scan,
         BottomBarItem.MyFridge,
     )
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    fun mainNavHandler(route: String) {
+        if (route == SCAN) {
+            globalNavController.navigate(SCAN)
+        }
+        else {
+            mainNavController.navigate(route)
+        }
+    }
 
     Column {
         Divider(color = DividerColor, thickness = 3.dp)
@@ -85,7 +95,7 @@ fun BottomBar(navController: NavHostController) {
                 AddItem(
                     screen = screen,
                     currentDestination = currentDestination,
-                    navController = navController
+                    onPressHandler = { r -> mainNavHandler(r) }
                 )
             }
         }
@@ -96,14 +106,12 @@ fun BottomBar(navController: NavHostController) {
 fun RowScope.AddItem(
     screen: BottomBarItem,
     currentDestination: NavDestination?,
-    navController: NavHostController
+    onPressHandler: (String) -> Unit
 ) {
     BottomNavigationItem(
         label = { Text(text = screen.title)},
         icon = {Icon(imageVector = screen.icon, contentDescription = screen.route)},
         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-        onClick = {
-            navController.navigate(screen.route)
-        }
+        onClick = { onPressHandler(screen.route) }
     )
 }

@@ -11,6 +11,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,7 +33,7 @@ class HomeViewModel @Inject constructor(val auth: AuthService) : ViewModel()
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
+    Column {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(20.dp)) {
             Image(painter = painterResource(R.drawable.app_logo), contentDescription = "Main Logo")
             HomeText(t = "welcome back \uD83D\uDC4B, ${viewModel.auth.userDisplayName}", isBold = true, fSize = 20)
@@ -43,9 +44,9 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                 Spacer(modifier = Modifier.size(75.dp))
                HomeTextInCircle(t = "hello\nalp", progress = 347f)
             }
-            Button(onClick = { viewModel.auth.signOut() }) {
-                FridgeyText("Temp. Sign Out")
-            }
+//            Button(onClick = { viewModel.auth.signOut() }) {
+//                FridgeyText("Temp. Sign Out")
+//            }
         }
         Row(modifier = Modifier.fillMaxWidth().background(color = HomeCommunityBg), horizontalArrangement = Arrangement.SpaceEvenly) {
             CommunityColumn(
@@ -83,35 +84,29 @@ fun HomeTextInCircle(t : String = "hello Fridgey", progress : Float = 250f) {
 
 @Composable
 fun CommunityColumn(title: Boolean = false, content: Array<String>) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly, modifier = Modifier
-        .padding(5.dp)
-        .height(2000.dp)
-        .verticalScroll(rememberScrollState())
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.verticalScroll(rememberScrollState()).padding(10.dp)
     ) {
-        Spacer(modifier = Modifier.height(15.dp))
         if (title) {
             HomeText(t = "from\nyour community", isBold = true, align = TextAlign.Start)
-            Spacer(modifier = Modifier.height(8.dp))
         }
         for (text in content) {
             CommunityButton(text = text)
         }
-        Spacer(modifier = Modifier.height(50.dp))
     }
 }
 
 @Composable
 fun CommunityButton(text: String) {
     Button(onClick = {},
-        Modifier
-            .width(160.dp)
-            .height(180.dp),
+        Modifier.width(160.dp).height(180.dp),
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Image(painter = painterResource(R.drawable.btn_google_light_normal__9), contentDescription = "Sign In Google Logo")
             HomeText(t = text, isBold = true)
         }
     }
-    Spacer(modifier = Modifier.height(20.dp))
 }
 

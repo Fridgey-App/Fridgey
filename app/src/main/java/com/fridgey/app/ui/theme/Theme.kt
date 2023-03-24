@@ -17,13 +17,13 @@ import com.fridgey.app.R
 
 private val DarkColorPalette = darkColors(
         primary = FridgeyBlue,
-        primaryVariant = Purple700,
+        primaryVariant = FridgeyAccent,
         secondary = Teal200
 )
 
 private val LightColorPalette = lightColors(
         primary = FridgeyBlue,
-        primaryVariant = Purple700,
+        primaryVariant = FridgeyAccent,
         secondary = Teal200
 
         /* Other default colors to override

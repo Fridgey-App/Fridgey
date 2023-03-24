@@ -6,24 +6,30 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.sharp.Lens
+import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.fridgey.app.ui.theme.FridgeyBlue
 import com.fridgey.app.ui.theme.FridgeyText
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
@@ -35,6 +41,8 @@ fun ScanScreen() {
         Log.d("[SCAN]", "Image captured! ${image.width}x${image.height}")
         image.close()
     }
+    val uiController = rememberSystemUiController()
+    uiController.setSystemBarsColor(Color.Transparent)
     CheckCameraPermission {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             CameraPreviewView(onImageCaptured = { i -> onImageCaptured(i) }, onError = { })
@@ -69,17 +77,6 @@ suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspendCoroutin
 }
 
 @Composable
-fun CameraControl(imageVector: ImageVector, desc: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    IconButton(onClick = onClick, modifier = modifier) {
-        Icon(
-            imageVector,
-            contentDescription = desc,
-            modifier = modifier,
-        )
-    }
-}
-
-@Composable
 private fun CameraPreviewView(onImageCaptured: (ImageProxy) -> Unit, onError: (ImageCaptureException) -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -108,7 +105,19 @@ private fun CameraPreviewView(onImageCaptured: (ImageProxy) -> Unit, onError: (I
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
         Column(modifier = Modifier.align(Alignment.BottomCenter), verticalArrangement = Arrangement.Bottom) {
-            CameraControl(Icons.Sharp.Lens, "take picture", modifier = Modifier.size(64.dp).padding(1.dp), onClick = { imageCapture.takePicture(onImageCaptured, onError) })
+            FloatingActionButton(
+                onClick = { imageCapture.takePicture(onImageCaptured, onError) },
+                modifier = Modifier.size(95.dp).shadow(2.dp, shape = CircleShape),
+                backgroundColor = FridgeyBlue
+            ) {
+                Icon(
+                    Icons.Outlined.PhotoCamera,
+                    contentDescription = "take picture",
+                    modifier = Modifier.size(50.dp),
+                    tint = Color.White
+                )
+            }
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }
