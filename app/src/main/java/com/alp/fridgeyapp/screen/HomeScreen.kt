@@ -33,30 +33,37 @@ class HomeViewModel @Inject constructor(val auth: AuthService) : ViewModel()
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
-        Card(elevation = 10.dp, modifier = Modifier.fillMaxWidth()) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(20.dp)) {
-                Image(painter = painterResource(R.drawable.app_logo), contentDescription = "Main Logo")
-                HomeText(t = "welcome back \uD83D\uDC4B, ${viewModel.auth.userDisplayName}", isBold = true, fSize = 20)
-                Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(25.dp)) {
-                    HomeTextInCircle(t = "hello\nrana", progress = 347f)
-                    Spacer(modifier = Modifier.size(70.dp))
-                    HomeTextInCircle(t = "hello\nceyda", progress = 240f)
-                    Spacer(modifier = Modifier.size(75.dp))
-                    HomeTextInCircle(t = "hello\nalp", progress = 347f)
-                }
-                Button(onClick = { viewModel.auth.signOut() }) {
-                    FridgeyText("Temp. Sign Out")
-                }
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(20.dp)) {
+            Image(painter = painterResource(R.drawable.app_logo), contentDescription = "Main Logo")
+            HomeText(t = "welcome back \uD83D\uDC4B, ${viewModel.auth.userDisplayName}", isBold = true, fSize = 20)
+            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(25.dp)) {
+                HomeTextInCircle(t = "hello\nrana", progress = 347f)
+                Spacer(modifier = Modifier.size(70.dp))
+                HomeTextInCircle(t = "hello\nceyda", progress = 240f)
+                Spacer(modifier = Modifier.size(75.dp))
+               HomeTextInCircle(t = "hello\nalp", progress = 347f)
+            }
+            Button(onClick = { viewModel.auth.signOut() }) {
+                FridgeyText("Temp. Sign Out")
             }
         }
-        Card(elevation = 1.dp, modifier = Modifier.fillMaxWidth(), backgroundColor = HomeCommunityBg) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
-                CommunityColumn(title = true, arrayOf("alp is using fridgey!", "ceyda the ai-master", "rana is creating great ui!"))
-                CommunityColumn(title = false, arrayOf("hi there, rana the coolest is here", "ensar is learning kotlin"))
-            }
+        Row(modifier = Modifier.fillMaxWidth().background(color = HomeCommunityBg), horizontalArrangement = Arrangement.SpaceEvenly) {
+            CommunityColumn(
+                title = true,
+                arrayOf(
+                    "alp is using fridgey!",
+                    "ceyda the ai-master",
+                    "rana is creating great ui!"
+                )
+            )
+            CommunityColumn(
+                title = false,
+                arrayOf("hi there, rana the coolest is here", "ensar is learning kotlin")
+            )
         }
     }
 }
+
 
 @Composable
 fun HomeTextInCircle(t : String = "hello Fridgey", progress : Float = 250f) {

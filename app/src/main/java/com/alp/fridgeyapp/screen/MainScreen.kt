@@ -1,5 +1,6 @@
 package com.alp.fridgeyapp.screen
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -22,6 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import com.alp.fridgeyapp.MAIN_HOME
 import com.alp.fridgeyapp.MAIN_MY_FRIDGE
 import com.alp.fridgeyapp.MAIN_SCAN
+import com.alp.fridgeyapp.ui.theme.DividerColor
+import androidx.compose.material.Divider
+import androidx.compose.ui.graphics.Color
 
 sealed class BottomBarItem(val route: String, val title: String, val icon: ImageVector) {
     object Home : BottomBarItem(
@@ -71,13 +76,18 @@ fun BottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    BottomNavigation {
-        screens.forEach { screen ->
-            AddItem(
-                screen = screen,
-                currentDestination = currentDestination,
-                navController = navController
-            )
+    Column {
+        Divider(color = DividerColor, thickness = 3.dp)
+        BottomNavigation(
+            backgroundColor = Color.White
+        ) {
+            screens.forEach { screen ->
+                AddItem(
+                    screen = screen,
+                    currentDestination = currentDestination,
+                    navController = navController
+                )
+            }
         }
     }
 }

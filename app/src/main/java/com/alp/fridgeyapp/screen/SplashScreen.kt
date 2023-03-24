@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.alp.fridgeyapp.R
 import com.alp.fridgeyapp.service.AuthService
 import com.alp.fridgeyapp.ui.theme.FridgeyText
 import com.google.android.gms.auth.api.signin.GoogleSignIn
