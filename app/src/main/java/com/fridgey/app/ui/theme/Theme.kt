@@ -1,11 +1,13 @@
 package com.fridgey.app.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -59,11 +61,11 @@ val caviarFamily = FontFamily(
 )
 
 @Composable
-fun FridgeyText(t : String, isBold : Boolean = false) {
+fun FridgeyText(t : String, modifier: Modifier = Modifier, isBold : Boolean = false) {
     if (isBold)
-        Text(text = t, fontSize = 22.sp, fontFamily = caviarFamily, fontWeight = FontWeight.Bold)
+        Text(text = t, fontSize = 22.sp, fontFamily = caviarFamily, fontWeight = FontWeight.Bold, modifier = modifier)
     else
-        Text(text = t, fontSize = 22.sp, fontFamily = caviarFamily)
+        Text(text = t, fontSize = 22.sp, fontFamily = caviarFamily, modifier = modifier)
 }
 
 @Composable

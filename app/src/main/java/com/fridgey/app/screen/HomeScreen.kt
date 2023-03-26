@@ -44,9 +44,6 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                 Spacer(modifier = Modifier.size(75.dp))
                HomeTextInCircle(t = "hello\nalp", progress = 347f)
             }
-//            Button(onClick = { viewModel.auth.signOut() }) {
-//                FridgeyText("Temp. Sign Out")
-//            }
         }
         Row(modifier = Modifier.fillMaxWidth().background(color = HomeCommunityBg), horizontalArrangement = Arrangement.SpaceEvenly) {
             CommunityColumn(
