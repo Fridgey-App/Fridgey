@@ -51,11 +51,11 @@ sealed class BottomBarItem(val route: String, val title: String, val icon: Image
 }
 
 @Composable
-fun MainScreen(globalNavController: NavController) {
+fun MainScreen(onScanPressed: () -> Unit) {
     val navController = rememberNavController()
     val uiController = rememberSystemUiController()
     uiController.setSystemBarsColor(Color.White)
-    Scaffold(bottomBar = { BottomBar(mainNavController = navController, globalNavController = globalNavController)}, modifier = Modifier.systemBarsPadding()) { padding ->
+    Scaffold(bottomBar = { BottomBar(mainNavController = navController, onScanPressed = onScanPressed)}) { padding ->
         NavHost(navController = navController, BottomBarItem.Home.route, modifier = Modifier.padding(padding)) {
             composable(route = BottomBarItem.Home.route) {
                 HomeScreen(hiltViewModel())
@@ -68,7 +68,7 @@ fun MainScreen(globalNavController: NavController) {
 }
 
 @Composable
-fun BottomBar(globalNavController: NavController, mainNavController: NavHostController) {
+fun BottomBar(mainNavController: NavController, onScanPressed: () -> Unit) {
     val screens = listOf(
         BottomBarItem.Home,
         BottomBarItem.Scan,
@@ -79,7 +79,7 @@ fun BottomBar(globalNavController: NavController, mainNavController: NavHostCont
 
     fun mainNavHandler(route: String) {
         if (route == SCAN) {
-            globalNavController.navigate(SCAN)
+            onScanPressed()
         }
         else {
             mainNavController.navigate(route)
