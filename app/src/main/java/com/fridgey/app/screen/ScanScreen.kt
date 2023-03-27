@@ -6,7 +6,9 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
@@ -22,6 +24,9 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import com.fridgey.app.service.BarcodeInfo
+import com.fridgey.app.service.BarcodeInfoService
 import com.fridgey.app.ui.theme.FridgeyText
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -30,56 +35,128 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import com.valentinilk.shimmer.ShimmerBounds
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import java.util.concurrent.Executors
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-@OptIn(ExperimentalAnimationApi::class)
+@HiltViewModel
+class ScanViewModel @Inject constructor(val barcodeInfoService: BarcodeInfoService) : ViewModel()
+
 @Composable
-fun ScanScreen(onBackPressed: () -> Unit) {
+fun ScanScreen(onBackPressed: () -> Unit, viewModel: ScanViewModel) {
     var scannedBarcodes = remember { mutableStateListOf<String>() }
+    var isCurrentlyScanning = remember { mutableStateOf(false) }
+
+    fun onBarcodesScanned(data: List<String>) {
+        for (b in data)
+            if (!scannedBarcodes.contains(b)) scannedBarcodes.add(b)
+    }
 
     CheckCameraPermission {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
-            Card(modifier = Modifier.fillMaxWidth(), elevation = 5.dp, shape = RectangleShape) {
-                Row(modifier = Modifier.padding(5.dp)) {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(
-                            Icons.Outlined.ArrowBackIosNew,
-                            contentDescription = "go back",
-                            modifier = Modifier.size(25.dp),
-                            tint = Color.Black
-                        )
-                    }
-                    Column {
-                        FridgeyText(t = "scanning for barcodes", isBold = true)
-                        AnimatedContent(
-                            targetState = scannedBarcodes.size,
-                            transitionSpec = {
-                                scaleIn() with scaleOut()
-                            }
-                        ) { targetCount ->
-                            FridgeyText("$targetCount barcodes total")
-                        }
+            ScanTopBar(onBackPressed = onBackPressed, barcodeCount = scannedBarcodes.size)
+            if (isCurrentlyScanning.value)
+                AddItemsList(barcodeList = scannedBarcodes, barcodeInfoService = viewModel.barcodeInfoService, scanMorePressed = { isCurrentlyScanning.value = false })
+            else
+                ScanCameraView(onBarcodesScanned = { data -> onBarcodesScanned(data) }, onFinishedScanning = { isCurrentlyScanning.value = true })
+        }
+    }
+}
 
-                    }
+@Composable
+fun FridgeItem(barcode: String, barcodeInfoService: BarcodeInfoService) {
+    var barcodeInfo = remember { mutableStateOf(emptyList<BarcodeInfo>()) }
+    var shimmer = rememberShimmer(shimmerBounds = ShimmerBounds.View)
+
+    LaunchedEffect(Unit) {
+        try {
+            val info = barcodeInfoService.getBarcodeInfo(barcode)
+            barcodeInfo.value = listOf(info)
+        }
+        catch (ex: Throwable) {
+
+        }
+    }
+
+    Card(modifier = Modifier
+        .height(100.dp)
+        .fillMaxWidth(), elevation = 5.dp) {
+        if (barcodeInfo.value.isEmpty()) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier
+                .padding(15.dp)
+                .fillMaxSize()) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+                    .shimmer(shimmer)
+                    .background(color = Color.LightGray))
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+                    .shimmer(shimmer)
+                    .background(color = Color.LightGray))
+            }
+        }
+        else if (barcodeInfo.value[0].status != "1")
+            Text("Failed to get product info :(")
+        else
+            Text(barcodeInfo.value[0].product.product_name)
+    }
+}
+
+@Composable
+fun AddItemsList(barcodeList: List<String>, barcodeInfoService: BarcodeInfoService, scanMorePressed: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(20.dp)) {
+            for (barcode in barcodeList) {
+                item {
+                    FridgeItem(barcode = barcode, barcodeInfoService = barcodeInfoService)
                 }
             }
-            Box(modifier = Modifier.fillMaxSize()) {
-                CameraPreviewView(onBarcodesScanned = { data ->
-                    for (b in data)
-                        if (!scannedBarcodes.contains(b)) scannedBarcodes.add(b)
-                })
+        }
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier.height(100.dp).padding(30.dp)) {
+            Button(onClick = scanMorePressed) {
+                FridgeyText("scan more", isBold = true)
+            }
+            Spacer(modifier = Modifier.width(15.dp))
+            Button(onClick = { /*TODO*/ }) {
+                FridgeyText("add", isBold = true)
+            }
+        }
+    }
+
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun ScanTopBar(onBackPressed: () -> Unit, barcodeCount : Int) {
+    Card(modifier = Modifier.fillMaxWidth(), elevation = 5.dp, shape = RectangleShape) {
+        Row(modifier = Modifier.padding(5.dp)) {
+            IconButton(onClick = onBackPressed) {
                 Icon(
-                    Icons.Sharp.CropFree,
-                    contentDescription = "focus center",
-                    modifier = Modifier.size(100.dp).alpha(0.5f).align(Alignment.Center),
-                    tint = Color.White
+                    Icons.Outlined.ArrowBackIosNew,
+                    contentDescription = "go back",
+                    modifier = Modifier.size(25.dp),
+                    tint = Color.Black
                 )
-                Button(onClick = {  }, Modifier.align(Alignment.BottomEnd).padding(30.dp)) {
-                    FridgeyText("continue", isBold = true)
+            }
+            Column {
+                FridgeyText(t = "scanning for barcodes", isBold = true)
+                AnimatedContent(
+                    targetState = barcodeCount,
+                    transitionSpec = {
+                        scaleIn() with scaleOut()
+                    }
+                ) { targetCount ->
+                    FridgeyText("$targetCount barcodes total")
                 }
+
             }
         }
     }
@@ -106,6 +183,30 @@ private fun CheckCameraPermission(content: @Composable () -> Unit) {
 suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspendCoroutine { continuation ->
     ProcessCameraProvider.getInstance(this).also { cameraProvider ->
         cameraProvider.addListener({ continuation.resume(cameraProvider.get()) }, ContextCompat.getMainExecutor(this))
+    }
+}
+
+@Composable
+fun ScanCameraView(onBarcodesScanned: (List<String>) -> Unit, onFinishedScanning: () -> Unit) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CameraPreviewView(onBarcodesScanned = onBarcodesScanned)
+        Icon(
+            Icons.Sharp.CropFree,
+            contentDescription = "focus center",
+            modifier = Modifier
+                .size(100.dp)
+                .alpha(0.5f)
+                .align(Alignment.Center),
+            tint = Color.White
+        )
+        Button(
+            onClick = onFinishedScanning,
+            Modifier
+                .align(Alignment.BottomEnd)
+                .padding(30.dp)
+        ) {
+            FridgeyText("continue", isBold = true)
+        }
     }
 }
 

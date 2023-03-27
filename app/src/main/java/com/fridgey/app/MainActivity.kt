@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
                     }) {
                     composable(SPLASH) { SplashScreen(hiltViewModel()) }
                     composable(MAIN) { MainScreen(onScanPressed = { navController.navigate(SCAN) { launchSingleTop = true } }) }
-                    composable(SCAN) { ScanScreen(onBackPressed = { navController.popBackStack() }) }
+                    composable(SCAN) { ScanScreen(onBackPressed = { navController.popBackStack() }, viewModel = hiltViewModel()) }
                 }
             }
         }

@@ -94,11 +94,10 @@ dependencies {
 
     implementation 'com.google.mlkit:vision-common:17.1.0'
     implementation 'com.google.mlkit:barcode-scanning:17.0.3'
-    //core
-    implementation("com.github.kittinunf.fuel:fuel:2.3.1")
 
-    //packages
-    implementation("com.github.kittinunf.result:result:5.3.0")
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.valentinilk.shimmer:compose-shimmer:1.0.4'
 
 
 }
