@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-data class BarcodeInfo (
+data class FoodItemData (
     @SerializedName("code") val code : String,
     @SerializedName("product") val product : Product,
     @SerializedName("status") val status : String,
@@ -19,9 +19,9 @@ data class BarcodeInfo (
 )
 
 data class Product (
-    @SerializedName("_id") val id : Int,
+    @SerializedName("_id") val id : String,
     @SerializedName("_keywords") val keywords : List<String>,
-    @SerializedName("brands") val brands : String,
+    @SerializedName("brands") val brands : String?,
     @SerializedName("categories") val categories : String,
     @SerializedName("categories_hierarchy") val categoriesHierarchy : List<String>,
     @SerializedName("expiration_date") val expirationDate : String,
@@ -73,21 +73,27 @@ data class SelectedImages (
 )
 
 data class Nutriments (
-    @SerializedName("carbohydrates") val carbohydrates : Int,
-    @SerializedName("energy-kcal") val energyKcal : Int,
-    @SerializedName("fat") val fat : Int,
-    @SerializedName("fiber") val fiber : Int,
-    @SerializedName("fruits-vegetables-nuts-estimate-from-ingredients_100g") val fruitsVegetablesNutsEstimateFromIngredients100g : Int,
-    @SerializedName("proteins") val proteins : Int,
+    @SerializedName("carbohydrates") val carbohydrates : Double,
+    @SerializedName("energy-kcal") val energyKcal : Double,
+    @SerializedName("fat") val fat : Double,
+    @SerializedName("fiber") val fiber : Double,
+    @SerializedName("fruits-vegetables-nuts-estimate-from-ingredients_100g") val fruitsVegetablesNutsEstimateFromIngredients100g : Double,
+    @SerializedName("proteins") val proteins : Double,
     @SerializedName("salt") val salt : Double,
-    @SerializedName("saturated-fat") val saturated_fat : Int,
+    @SerializedName("saturated-fat") val saturated_fat : Double,
     @SerializedName("sodium") val sodium : Double,
-    @SerializedName("sugars") val sugars : Int,
+    @SerializedName("sugars") val sugars : Double,
 )
 
-interface BarcodeInfoService {
-    @GET("/api/v0/product/{barcode}.json?fields=product_name")
-    suspend fun getBarcodeInfo(@Path("barcode") barcode: String): BarcodeInfo
+
+enum class LoadState {
+    LOADING, ERROR, READY
+}
+
+interface FoodItemInfoService {
+    @GET("/api/v0/product/{barcode}.json")
+    suspend fun getData(@Path("barcode") barcode: String): FoodItemData
+
 }
 
 @Module
@@ -110,7 +116,7 @@ object NetworkModule {
     }
 
     @Provides
-    fun provideBarcodeInfoService(retrofit: Retrofit): BarcodeInfoService {
-        return retrofit.create(BarcodeInfoService::class.java)
+    fun provideBarcodeInfoService(retrofit: Retrofit): FoodItemInfoService {
+        return retrofit.create(FoodItemInfoService::class.java)
     }
 }
