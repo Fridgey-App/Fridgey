@@ -11,7 +11,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,7 +20,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fridgey.app.R
 import com.fridgey.app.service.AuthService
-import com.fridgey.app.ui.theme.FridgeyText
+import com.fridgey.app.service.FridgeService
 import com.fridgey.app.ui.theme.HomeCommunityBg
 import com.fridgey.app.ui.theme.HomeText
 import com.fridgey.app.ui.theme.caviarFamily
@@ -29,7 +28,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(val auth: AuthService) : ViewModel()
+class HomeViewModel @Inject constructor(val auth: AuthService, val user: FridgeService) : ViewModel()
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {

@@ -6,9 +6,7 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
@@ -24,21 +22,21 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
-import com.fridgey.app.service.BarcodeInfo
-import com.fridgey.app.service.BarcodeInfoService
+import com.fridgey.app.service.FoodItem
+import com.fridgey.app.service.FridgeService
 import com.fridgey.app.ui.theme.FridgeyText
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.google.firebase.Timestamp
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import com.valentinilk.shimmer.ShimmerBounds
-import com.valentinilk.shimmer.rememberShimmer
-import com.valentinilk.shimmer.shimmer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -46,7 +44,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
-class ScanViewModel @Inject constructor(val barcodeInfoService: BarcodeInfoService) : ViewModel()
+class ScanViewModel @Inject constructor(val fridge: FridgeService) : ViewModel()
 
 @Composable
 fun ScanScreen(onBackPressed: () -> Unit, viewModel: ScanViewModel) {
@@ -62,7 +60,7 @@ fun ScanScreen(onBackPressed: () -> Unit, viewModel: ScanViewModel) {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
             ScanTopBar(onBackPressed = onBackPressed, barcodeCount = scannedBarcodes.size)
             if (isCurrentlyScanning.value)
-                AddItemsList(barcodeList = scannedBarcodes, barcodeInfoService = viewModel.barcodeInfoService, scanMorePressed = { isCurrentlyScanning.value = false })
+                InspectItems(barcodeList = scannedBarcodes.map { b -> FoodItem(b, Timestamp.now()) }, fridge = viewModel.fridge, onScanMorePressed = { isCurrentlyScanning.value = false }, onFinishedAdding = onBackPressed)
             else
                 ScanCameraView(onBarcodesScanned = { data -> onBarcodesScanned(data) }, onFinishedScanning = { isCurrentlyScanning.value = true })
         }
@@ -70,67 +68,47 @@ fun ScanScreen(onBackPressed: () -> Unit, viewModel: ScanViewModel) {
 }
 
 @Composable
-fun FridgeItem(barcode: String, barcodeInfoService: BarcodeInfoService) {
-    var barcodeInfo = remember { mutableStateOf(emptyList<BarcodeInfo>()) }
-    var shimmer = rememberShimmer(shimmerBounds = ShimmerBounds.View)
+fun InspectItems(barcodeList: List<FoodItem>, fridge: FridgeService, onScanMorePressed: () -> Unit, onFinishedAdding: () -> Unit) {
+    var isAdding by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        try {
-            val info = barcodeInfoService.getBarcodeInfo(barcode)
-            barcodeInfo.value = listOf(info)
-        }
-        catch (ex: Throwable) {
-
+    fun addToFridge() {
+        isAdding = true
+        coroutineScope.launch {
+            fridge.addFridgeItems(barcodeList)
+        }.invokeOnCompletion {
+            onFinishedAdding()
         }
     }
 
-    Card(modifier = Modifier
-        .height(100.dp)
-        .fillMaxWidth(), elevation = 5.dp) {
-        if (barcodeInfo.value.isEmpty()) {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier
-                .padding(15.dp)
-                .fillMaxSize()) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(30.dp)
-                    .shimmer(shimmer)
-                    .background(color = Color.LightGray))
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(30.dp)
-                    .shimmer(shimmer)
-                    .background(color = Color.LightGray))
-            }
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(0.9f)) {
+            if (isAdding)
+                AddToFridgeLoading()
+            else
+                FoodItemList(itemList = barcodeList, hiltViewModel())
         }
-        else if (barcodeInfo.value[0].status != "1")
-            Text("Failed to get product info :(")
-        else
-            Text(barcodeInfo.value[0].product.product_name)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier
+            .fillMaxWidth()
+            .weight(0.1f)) {
+            Button(onClick = onScanMorePressed) {
+                FridgeyText("scan more", isBold = true)
+            }
+            Spacer(modifier = Modifier.width(15.dp))
+            Button(onClick = { addToFridge() }) {
+                FridgeyText("add", isBold = true)
+            }
+            Spacer(modifier = Modifier.width(30.dp))
+        }
     }
 }
 
 @Composable
-fun AddItemsList(barcodeList: List<String>, barcodeInfoService: BarcodeInfoService, scanMorePressed: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(20.dp)) {
-            for (barcode in barcodeList) {
-                item {
-                    FridgeItem(barcode = barcode, barcodeInfoService = barcodeInfoService)
-                }
-            }
-        }
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier.height(100.dp).padding(30.dp)) {
-            Button(onClick = scanMorePressed) {
-                FridgeyText("scan more", isBold = true)
-            }
-            Spacer(modifier = Modifier.width(15.dp))
-            Button(onClick = { /*TODO*/ }) {
-                FridgeyText("add", isBold = true)
-            }
-        }
+fun AddToFridgeLoading() {
+    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround) {
+        FridgeyText("adding to fridge...")
+        LinearProgressIndicator()
     }
-
 }
 
 @OptIn(ExperimentalAnimationApi::class)
