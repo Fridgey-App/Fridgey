@@ -10,6 +10,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fridgey.app.screen.MainScreen
@@ -20,6 +21,7 @@ import com.fridgey.app.ui.theme.FridgeyTheme
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -37,6 +39,8 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun FridgeyMainApp() {
         val navController = rememberAnimatedNavController()
+        val uiController = rememberSystemUiController()
+        uiController.setSystemBarsColor(Color.White)
 
         val startDestination = if (auth.hasUser)
             MAIN

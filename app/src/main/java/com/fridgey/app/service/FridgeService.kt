@@ -13,8 +13,8 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 data class FoodItem(
-    val barcode: String,
-    val addedTime: Timestamp,
+    val barcode: String = "",
+    val addedTime: Timestamp = Timestamp(0, 0),
 )
 
 class FridgeService @Inject constructor(private val auth: FirebaseAuth, private val firestore: FirebaseFirestore, private val foodItemInfo: FoodItemInfoService) {
@@ -27,7 +27,7 @@ class FridgeService @Inject constructor(private val auth: FirebaseAuth, private 
     private val userDocument: DocumentReference
         get() = firestore.collection("users").document(uid)
 
-    suspend fun addFridgeItem(fridgeItem: FoodItem) {
+    private suspend fun addFridgeItem(fridgeItem: FoodItem) {
         fridgeDocuments.document(fridgeItem.barcode).set(fridgeItem).await()
     }
 
@@ -40,12 +40,9 @@ class FridgeService @Inject constructor(private val auth: FirebaseAuth, private 
         return fridge.toObjects()
     }
 
-    suspend fun removeFridgeItem(fridgeItem: FoodItem) {
-        fridgeDocuments.document(fridgeItem.barcode).delete().await()
-    }
-
-    suspend fun createUserData() {
-         userDocument.set(hashMapOf("userId" to uid)).await()
+    suspend fun removeFridgeItem(barcode: String) {
+        if (barcode != "")
+            fridgeDocuments.document(barcode).delete().await()
     }
 
     fun getFoodItemData(items: List<FoodItem>): LiveData<List<Pair<LoadState, FoodItemData?>>> {

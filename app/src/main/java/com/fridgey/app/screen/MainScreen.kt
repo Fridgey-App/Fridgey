@@ -53,15 +53,13 @@ sealed class BottomBarItem(val route: String, val title: String, val icon: Image
 @Composable
 fun MainScreen(onScanPressed: () -> Unit) {
     val navController = rememberNavController()
-    val uiController = rememberSystemUiController()
-    uiController.setSystemBarsColor(Color.White)
     Scaffold(bottomBar = { BottomBar(mainNavController = navController, onScanPressed = onScanPressed)}) { padding ->
         NavHost(navController = navController, BottomBarItem.Home.route, modifier = Modifier.padding(padding)) {
             composable(route = BottomBarItem.Home.route) {
                 HomeScreen(hiltViewModel())
             }
             composable(route = BottomBarItem.MyFridge.route) {
-                MyFridgeScreen()
+                MyFridgeScreen(hiltViewModel())
             }
         }
     }

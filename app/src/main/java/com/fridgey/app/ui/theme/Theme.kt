@@ -61,11 +61,11 @@ val caviarFamily = FontFamily(
 )
 
 @Composable
-fun FridgeyText(t : String, modifier: Modifier = Modifier, isBold : Boolean = false) {
+fun FridgeyText(t : String, modifier: Modifier = Modifier, isBold : Boolean = false, scale: Float = 1.0f) {
     if (isBold)
-        Text(text = t, fontSize = 22.sp, fontFamily = caviarFamily, fontWeight = FontWeight.Bold, modifier = modifier)
+        Text(text = t, fontSize = 22.sp * scale, fontFamily = caviarFamily, fontWeight = FontWeight.Bold, modifier = modifier)
     else
-        Text(text = t, fontSize = 22.sp, fontFamily = caviarFamily, modifier = modifier)
+        Text(text = t, fontSize = 22.sp * scale, fontFamily = caviarFamily, modifier = modifier)
 }
 
 @Composable

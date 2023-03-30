@@ -1,7 +1,9 @@
 package com.fridgey.app.screen
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -48,19 +50,25 @@ class ScanViewModel @Inject constructor(val fridge: FridgeService) : ViewModel()
 
 @Composable
 fun ScanScreen(onBackPressed: () -> Unit, viewModel: ScanViewModel) {
-    var scannedBarcodes = remember { mutableStateListOf<String>() }
-    var isCurrentlyScanning = remember { mutableStateOf(false) }
+    val scannedBarcodes = remember { mutableStateListOf<String>() }
+    val isCurrentlyScanning = remember { mutableStateOf(false) }
 
     fun onBarcodesScanned(data: List<String>) {
         for (b in data)
-            if (!scannedBarcodes.contains(b)) scannedBarcodes.add(b)
+            if (!scannedBarcodes.contains(b.removePrefix("0"))) scannedBarcodes.add(b.removePrefix("0"))
     }
 
     CheckCameraPermission {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
             ScanTopBar(onBackPressed = onBackPressed, barcodeCount = scannedBarcodes.size)
             if (isCurrentlyScanning.value)
-                InspectItems(barcodeList = scannedBarcodes.map { b -> FoodItem(b, Timestamp.now()) }, fridge = viewModel.fridge, onScanMorePressed = { isCurrentlyScanning.value = false }, onFinishedAdding = onBackPressed)
+                InspectItems(
+                    barcodeList = scannedBarcodes.map { b -> FoodItem(b, Timestamp.now()) },
+                    fridge = viewModel.fridge,
+                    onScanMorePressed = { isCurrentlyScanning.value = false },
+                    onFinishedAdding = onBackPressed,
+                    onRemovePressed = { b -> scannedBarcodes.remove(b) }
+                )
             else
                 ScanCameraView(onBarcodesScanned = { data -> onBarcodesScanned(data) }, onFinishedScanning = { isCurrentlyScanning.value = true })
         }
@@ -68,7 +76,7 @@ fun ScanScreen(onBackPressed: () -> Unit, viewModel: ScanViewModel) {
 }
 
 @Composable
-fun InspectItems(barcodeList: List<FoodItem>, fridge: FridgeService, onScanMorePressed: () -> Unit, onFinishedAdding: () -> Unit) {
+fun InspectItems(barcodeList: List<FoodItem>, fridge: FridgeService, onScanMorePressed: () -> Unit, onFinishedAdding: () -> Unit, onRemovePressed: (String) -> Unit) {
     var isAdding by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -86,7 +94,7 @@ fun InspectItems(barcodeList: List<FoodItem>, fridge: FridgeService, onScanMoreP
             if (isAdding)
                 AddToFridgeLoading()
             else
-                FoodItemList(itemList = barcodeList, hiltViewModel())
+                FoodItemList(itemList = barcodeList, hiltViewModel(), onRemovePressed = onRemovePressed)
         }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End, modifier = Modifier
             .fillMaxWidth()
